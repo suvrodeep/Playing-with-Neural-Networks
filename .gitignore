@@ -1,0 +1,4 @@
+/download/*.*
+/download
+/.ipynb_checkpoints
+/.ipynb_checkpoints/*.*
