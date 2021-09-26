@@ -23,7 +23,7 @@ from sklearn.metrics import classification_report
 x_train[0].shape
 
 # View a sample image
-plt.imshow(x_train[10])
+# plt.imshow(x_train[10])
 
 x_train
 x_train[10].max()
@@ -53,8 +53,8 @@ x_test = x_test.reshape(10000, 28, 28, 1)
 def prep_devices():
     phy_gpus = tf.config.list_physical_devices(device_type='GPU')
 
-    # for gpu in phy_gpus:
-    #     tf.config.experimental.set_memory_growth(device=gpu, enable=True)
+    for gpu in phy_gpus:
+        tf.config.experimental.set_memory_growth(device=gpu, enable=True)
 
     log_gpus = tf.config.list_logical_devices(device_type='GPU')
     phy_cpus = tf.config.list_physical_devices(device_type='CPU')
@@ -66,7 +66,7 @@ def prep_devices():
                                                                                             len(log_cpus)))
 
 
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 prep_devices()
 
 
@@ -89,12 +89,12 @@ model.add(Dense(10, activation='softmax'))
 model.summary()
 
 # Create early stopping callback
-early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=2, restore_best_weights=True)
+early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5, restore_best_weights=True)
 
 # Fit model
 backend.clear_session()
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(x=x_train, y=y_train_cat, epochs=30, validation_split=0.1, callbacks=[early_stop])
+model.fit(x=x_train, y=y_train_cat, epochs=50, validation_split=0.1, callbacks=[early_stop])
 
 
 # Model evaluation
@@ -104,7 +104,7 @@ metrics
 
 # Evaluate graphically
 metrics = pd.DataFrame(model.history.history)
-sns.lineplot(data=metrics[['accuracy', 'val_accuracy']])
+# sns.lineplot(data=metrics[['accuracy', 'val_accuracy']])
 
 
 # Compute predicted classes and model performance metrics
