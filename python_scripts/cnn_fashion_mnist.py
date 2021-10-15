@@ -4,7 +4,7 @@
 import os
 import tensorflow as tf
 from tensorflow.keras.datasets import fashion_mnist
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import backend
 import pandas as pd
 import numpy as np
-# import seaborn as sns
+import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
@@ -23,9 +23,14 @@ from sklearn.metrics import classification_report
 x_train[0].shape
 
 # View a sample image
-# plt.imshow(x_train[10])
+plt.imshow(x_train[10])
+
+##################################################
+# Explore training data and labels
+##################################################
 
 x_train
+
 x_train[10].max()
 
 y_train
@@ -71,41 +76,50 @@ prep_devices()
 
 
 # Build model
-model = Sequential()
+def model_func(clear_session=True):
+    if clear_session:
+        backend.clear_session()
 
-model.add(Conv2D(filters=32, kernel_size=(3, 3), input_shape=(28, 28, 1), activation='relu'))
-model.add(MaxPool2D(pool_size=(2, 2)))
+    model = Sequential()
 
-model.add(Dropout(0.5))
+    model.add(Conv2D(filters=32, kernel_size=(3, 3), input_shape=(28, 28, 1), activation='relu'))
+    model.add(MaxPool2D(pool_size=(2, 2)))
 
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPool2D(pool_size=(2, 2)))
+    model.add(Dropout(0.5))
 
-model.add(Flatten())
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(10, activation='softmax'))
+    model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPool2D(pool_size=(2, 2)))
 
-model.summary()
+    model.add(Flatten())
+    model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(10, activation='softmax'))
 
-# Create early stopping callback
-early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5, restore_best_weights=True)
+    model.summary()
 
-# Fit model
-backend.clear_session()
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(x=x_train, y=y_train_cat, epochs=50, validation_split=0.1, callbacks=[early_stop])
+    return model
 
+
+# Define function to clear previous run model
+def run_model(optimizer="adam", epochs=100, metrics=None, patience=5, val_split=0.1, batch_size=500):
+    # Fit model
+    if metrics is None:
+        metrics = ["accuracy"]
+    model = model_func()
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=metrics)
+
+    early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=patience, restore_best_weights=True)
+    model.fit(x=x_train, y=y_train_cat, epochs=epochs, validation_split=val_split, batch_size=batch_size,
+              callbacks=[early_stop])
+
+    return model
+
+
+model = run_model()
 
 # Model evaluation
-metrics = pd.DataFrame(model.history.history)
-metrics
-
-
-# Evaluate graphically
-metrics = pd.DataFrame(model.history.history)
-# sns.lineplot(data=metrics[['accuracy', 'val_accuracy']])
-
+model_metrics = pd.DataFrame(model.history.history)
+sns.lineplot(data=model_metrics[['accuracy', 'val_accuracy']])
 
 # Compute predicted classes and model performance metrics
 y_pred = np.argmax(model.predict(x_test), axis=-1)
@@ -113,3 +127,4 @@ y_pred = np.argmax(model.predict(x_test), axis=-1)
 print(classification_report(y_true=y_test, y_pred=y_pred))
 print("\n")
 print(confusion_matrix(y_true=y_test, y_pred=y_pred))
+
