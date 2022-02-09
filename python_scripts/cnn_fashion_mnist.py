@@ -3,13 +3,13 @@
 
 import os
 import tensorflow as tf
-from tensorflow.keras.datasets import fashion_mnist
 import matplotlib.pyplot as plt
 from tensorflow import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras import backend
+from keras.datasets import fashion_mnist
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
+from keras.callbacks import EarlyStopping
+from keras import backend
 import pandas as pd
 import numpy as np
 import seaborn as sns
