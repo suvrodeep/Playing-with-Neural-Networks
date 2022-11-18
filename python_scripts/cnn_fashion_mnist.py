@@ -20,7 +20,7 @@ from sklearn.metrics import classification_report
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 # Check dimensions of image
-x_train[0].shape
+print(x_train[0].shape)
 
 # View a sample image
 plt.imshow(x_train[10])
@@ -29,11 +29,11 @@ plt.imshow(x_train[10])
 # Explore training data and labels
 ##################################################
 
-x_train
+print(x_train)
 
 x_train[10].max()
 
-y_train
+print(y_train)
 
 print("Train data shape:{}".format(x_train.shape))
 print("Test data shape:{}".format(x_test.shape))
