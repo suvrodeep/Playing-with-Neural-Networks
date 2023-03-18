@@ -20,7 +20,7 @@ from sklearn.metrics import classification_report
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 # Check dimensions of image
-x_train[0].shape
+print(x_train[0].shape)
 
 # View a sample image
 plt.imshow(x_train[10])
@@ -29,11 +29,11 @@ plt.imshow(x_train[10])
 # Explore training data and labels
 ##################################################
 
-x_train
+print(x_train)
 
-x_train[10].max()
+print(x_train[10].max())
 
-y_train
+print(y_train)
 
 print("Train data shape:{}".format(x_train.shape))
 print("Test data shape:{}".format(x_test.shape))
@@ -58,8 +58,9 @@ x_test = x_test.reshape(10000, 28, 28, 1)
 def prep_devices():
     phy_gpus = tf.config.list_physical_devices(device_type='GPU')
 
-    for gpu in phy_gpus:
-        tf.config.experimental.set_memory_growth(device=gpu, enable=True)
+    # Disabled for Nvidia GPU 3060 Ti
+    # for gpu in phy_gpus:
+    #     tf.config.experimental.set_memory_growth(device=gpu, enable=True)
 
     log_gpus = tf.config.list_logical_devices(device_type='GPU')
     phy_cpus = tf.config.list_physical_devices(device_type='CPU')
@@ -101,7 +102,7 @@ def model_func(clear_session=True):
 
 
 # Define function to clear previous run model
-def run_model(optimizer="adam", epochs=100, metrics=None, patience=5, val_split=0.1, batch_size=500):
+def train_model(optimizer="adam", epochs=100, metrics=None, patience=5, val_split=0.1, batch_size=500):
     # Fit model
     if metrics is None:
         metrics = ["accuracy"]
@@ -115,14 +116,14 @@ def run_model(optimizer="adam", epochs=100, metrics=None, patience=5, val_split=
     return model
 
 
-model = run_model()
+trained_model = train_model()
 
 # Model evaluation
-model_metrics = pd.DataFrame(model.history.history)
+model_metrics = pd.DataFrame(trained_model.history.history)
 sns.lineplot(data=model_metrics[['accuracy', 'val_accuracy']])
 
 # Compute predicted classes and model performance metrics
-y_pred = np.argmax(model.predict(x_test), axis=-1)
+y_pred = np.argmax(trained_model.predict(x_test), axis=-1)
 
 print(classification_report(y_true=y_test, y_pred=y_pred))
 print("\n")
